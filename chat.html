@@ -1,13 +1,20 @@
 <!DOCTYPE html>
 <html lang="ja">
 <head>
-  <meta charset="UTF-8">
-  <title>スーパータサカ診断</title>
-  <link rel="stylesheet" href="style.css">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>スーパータサカ診断 - 診断開始</title>
+  <link rel="stylesheet" href="style.css" />
 </head>
 <body>
-  <div id="question-container">
-    <p>読み込み中...</p>
+  <div class="container">
+    <div id="chat-box">
+      <div id="question-container"></div>
+      <div id="input-area">
+        <input type="text" id="username-input" placeholder="お名前を入力してください" />
+        <button id="start-btn">診断開始</button>
+      </div>
+    </div>
   </div>
   <script src="script.js"></script>
 </body>

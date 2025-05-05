@@ -42,6 +42,7 @@ async function fetchQuestions() {
   try {
     const response = await fetch(`${GAS_ENDPOINT}?action=getQuestions`, {
       method: 'GET',
+      mode: 'cors',
       headers: {
         'Content-Type': 'application/json'
       }
@@ -52,11 +53,14 @@ async function fetchQuestions() {
     }
     
     const data = await response.json();
-    console.log('Received questions:', data); // デバッグ用
+    if (data.error) {
+      throw new Error(data.error);
+    }
+    
     return data.questions || [];
   } catch (error) {
     console.error('質問取得エラー:', error);
-    return [];
+    throw error;
   }
 }
 
@@ -90,6 +94,7 @@ async function answerQuestion(answer) {
   try {
     const response = await fetch(GAS_ENDPOINT, {
       method: 'POST',
+      mode: 'cors',
       headers: {
         'Content-Type': 'application/json',
       },
@@ -106,7 +111,9 @@ async function answerQuestion(answer) {
     }
 
     const result = await response.json();
-    console.log('Answer submission result:', result); // デバッグ用
+    if (!result.success) {
+      throw new Error(result.error || '回答の送信に失敗しました');
+    }
 
     currentQuestionIndex++;
     showQuestion();

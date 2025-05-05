@@ -27,47 +27,72 @@
     // 結果を取得して表示
     async function fetchResult() {
       try {
+        document.getElementById('result-container').innerHTML = '<p>結果を取得中...</p>';
+        console.log(`${userId}さんの結果を取得しています...`);
+        
         // スコア計算シートから結果を取得
         const response = await fetch(`${GAS_ENDPOINT}?action=getResult&userId=${encodeURIComponent(userId)}`, {
-          mode: 'no-cors',
+          method: 'GET',
+          mode: 'cors',
           headers: {
             'Content-Type': 'application/json'
           }
         });
+        
+        if (!response.ok) {
+          throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        
         const data = await response.json();
+        console.log('取得データ:', data);
         
         if (data.success && data.result) {
           document.getElementById('result-container').innerHTML = `
             <p class="user-name">${userId}さんの診断結果</p>
             <div class="result-content">
-              <p class="score">合計スコア: ${data.result}点</p>
-              <p class="result-message">${getResultMessage(data.result)}</p>
+              <p class="result-buddha">あなたと相性の良い仏様: ${data.result}</p>
+              <p class="result-message">${getBuddhaMessage(data.result)}</p>
             </div>
           `;
         } else {
           document.getElementById('result-container').innerHTML = `
             <p class="error-message">診断結果の取得に失敗しました。</p>
             <p class="error-detail">スプレッドシートの「診断ツール」メニューから「スコア集計実行」を実行してください。</p>
+            <button onclick="fetchResult()">もう一度試す</button>
           `;
         }
       } catch (error) {
         console.error('結果取得エラー:', error);
         document.getElementById('result-container').innerHTML = `
           <p class="error-message">診断結果の取得に失敗しました。</p>
-          <p class="error-detail">スプレッドシートの「診断ツール」メニューから「スコア集計実行」を実行してください。</p>
+          <p class="error-detail">ネットワーク接続を確認して、もう一度お試しください。</p>
+          <button onclick="fetchResult()">もう一度試す</button>
         `;
       }
     }
 
-    // スコアに応じたメッセージを返す
-    function getResultMessage(score) {
-      if (score <= 88) {
-        return 'あなたは慎重派です。物事をじっくりと考えて行動するタイプです。';
-      } else if (score <= 176) {
-        return 'あなたはバランス型です。状況に応じて柔軟に対応できるタイプです。';
-      } else {
-        return 'あなたは積極派です。新しいことにチャレンジすることを好むタイプです。';
-      }
+    // 仏様に応じたメッセージを返す
+    function getBuddhaMessage(buddha) {
+      const messages = {
+        '大日如来': '宇宙の真理を体現する存在。あなたは真理を追求する探究心を持っています。',
+        '阿弥陀如来': '慈悲深く、人々を救済する存在。あなたは思いやりと包容力に溢れています。',
+        '薬師如来': '病や苦しみを癒す存在。あなたは他者の痛みに敏感で、癒しの力を持っています。',
+        '釈迦如来': '悟りを開いた存在。あなたは知恵と洞察力に優れています。',
+        '阿閦如来': '不動の決意を持つ存在。あなたは信念を貫く強さを持っています。',
+        '宝生如来': '豊かさと満足をもたらす存在。あなたは与えることの喜びを知っています。',
+        '不空成就如来': '願いを成就させる存在。あなたは目標達成への強い意志を持っています。',
+        '毘盧遮那如来': '宇宙の光明を表す存在。あなたは周囲を照らす明るさを持っています。',
+        '観音菩薩': '慈悲の象徴。あなたは人の声に耳を傾け、共感する力があります。',
+        '勢至菩薩': '智慧の光を放つ存在。あなたは物事の本質を見抜く目を持っています。',
+        '文殊菩薩': '智慧の象徴。あなたは深い洞察力と問題解決能力を持っています。',
+        '普賢菩薩': '修行と実践の象徴。あなたは行動力と継続力に優れています。',
+        '地蔵菩薩': '苦しむ者を救う存在。あなたは忍耐強く、人を支える力があります。',
+        '不動明王': '障害を取り除く存在。あなたは困難に立ち向かう勇気を持っています。',
+        '愛染明王': '煩悩を転じて悟りに至る力。あなたは情熱を持ちながらも冷静さを失いません。',
+        '降三世明王': '三界の煩悩を降伏させる存在。あなたは自己コントロール力に優れています。'
+      };
+      
+      return messages[buddha] || `${buddha}との相性が良いようです。あなたの素晴らしい特性が発揮されることでしょう。`;
     }
 
     if (userId) {
@@ -75,6 +100,7 @@
     } else {
       document.getElementById('result-container').innerHTML = `
         <p class="error-message">ユーザー情報が見つかりませんでした。</p>
+        <p>診断をもう一度最初から行ってください。</p>
       `;
     }
   </script>

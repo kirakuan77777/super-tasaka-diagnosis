@@ -90,7 +90,6 @@ async function answerQuestion(answer) {
   try {
     const response = await fetch(GAS_ENDPOINT, {
       method: 'POST',
-      mode: 'no-cors',
       headers: {
         'Content-Type': 'application/json',
       },
@@ -102,11 +101,12 @@ async function answerQuestion(answer) {
       })
     });
 
-    const result = await response.json();
-    if (!result.success) {
-      alert('回答の送信に失敗しました。もう一度試してください。');
-      return;
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`);
     }
+
+    const result = await response.json();
+    console.log('Answer submission result:', result); // デバッグ用
 
     currentQuestionIndex++;
     showQuestion();

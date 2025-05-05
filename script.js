@@ -41,12 +41,18 @@ async function startDiagnosis() {
 async function fetchQuestions() {
   try {
     const response = await fetch(`${GAS_ENDPOINT}?action=getQuestions`, {
-      mode: 'no-cors',
+      method: 'GET',
       headers: {
         'Content-Type': 'application/json'
       }
     });
+    
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`);
+    }
+    
     const data = await response.json();
+    console.log('Received questions:', data); // デバッグ用
     return data.questions || [];
   } catch (error) {
     console.error('質問取得エラー:', error);
